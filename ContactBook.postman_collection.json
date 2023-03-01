@@ -1,0 +1,208 @@
+{
+	"info": {
+		"_postman_id": "e5860279-538f-492f-8204-35e1d7739f38",
+		"name": "ContactBook",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5969178"
+	},
+	"item": [
+		{
+			"name": "GET All contacts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check if response type is json\", () => {\r",
+							"    pm.response.to.be.json;\r",
+							"    const respBody = pm.response.json();\r",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json; charset=utf-8');\r",
+							"    pm.expect(typeof(respBody)).is.equal(\"object\"); \r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{host}}/contacts",
+					"protocol": "https",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Contact by keyword",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check the last name\", () => {\r",
+							"    pm.response.to.be.json;\r",
+							"    const respBody = pm.response.json();\r",
+							"    pm.expect(respBody[0].lastName, \"LastName property\").to.be.equal(\"Jackson\");\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{host}}/contacts/search/{{keyword}}",
+					"protocol": "https",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"contacts",
+						"search",
+						"{{keyword}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Create contact",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Check if status code is 201 or 202\", function () {\r",
+							"    pm.expect(pm.response.code, \"Status code property\").to.be.oneOf([201, 202]);\r",
+							"\r",
+							"    const respBody = pm.response.json();\r",
+							"    pm.environment.set(\"contactId\", respBody.contact.id);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Marie\",\r\n    \"lastName\": \"Curie\",\r\n    \"email\": \"marie67@gmail.com\",\r\n    \"phone\": \"+1 800 200 300\",\r\n    \"comments\": \"Old friend\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{host}}/contacts",
+					"protocol": "https",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH Try to edit existing contact",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"HTTP status code: 404 Not Found\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Maria\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{host}}/contacts/{{contactId}}",
+					"protocol": "https",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"contacts",
+						"{{contactId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Existing contact",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check if the contact is deleted\", () => {\r",
+							"    const respBody = pm.response.json();\r",
+							"    pm.expect(respBody.msg, \"MSG property\").to.be.equal(\"Contact deleted: \" + pm.environment.get(\"contactId\"));\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://{{host}}/contacts/{{contactId}}",
+					"protocol": "https",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"contacts",
+						"{{contactId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
